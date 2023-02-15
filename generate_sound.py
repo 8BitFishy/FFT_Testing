@@ -21,12 +21,7 @@ def Generate_Sound():
         # signal information
         freq = int(input(f"Signal {i} freq: "))  # in hertz, the desired natural frequency
         volume = float(input(f"Signal {i} volume (0-1): "))
-        '''
-        for j in range(channels):
-            
-        omega = 2 * np.pi * freq  # angular frequency for sine waves
-        y = y + np.sin(omega * t_vec)
-        '''
+
         file_name += str(f"{freq}+")
 
         _, y = generate_sine_wave(freq, Sample_Rate, Duration)

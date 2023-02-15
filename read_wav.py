@@ -23,7 +23,7 @@ def Get_data_From_Wav():
     data = Read_Wav(f"wav_files/{filelist[file]}")
 
     if input("Plot waveform? (y/n) ") == "y":
-        plt.plot(data.data[:1000])
+        plt.plot(data.data)
         plt.show()
 
     return filelist[file], data

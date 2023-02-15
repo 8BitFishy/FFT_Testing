@@ -9,4 +9,5 @@ def Get_Data():
     else:
         file, data = read_wav.Get_data_From_Wav()
 
+    file = file.strip(".wav")
     return file, data
