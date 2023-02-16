@@ -16,7 +16,7 @@ def Run_RFFT(file_name, data):
     else:
         channels = 1
 
-    frames = frame_count(duration, N, channels)
+    frames = frame_count(duration, N, channels, data.rate)
     frame_duration = duration / frames
 
     print(f"frames selected = {frames}")
@@ -32,9 +32,15 @@ def Run_RFFT(file_name, data):
     for c in range(y_data.shape[1]):
         print(f"\nAnalysing channel {c + 1} of {y_data.shape[1]}")
         y_data_channel = y_data[:, c]
+        printed = 0
         for i in range(frames):
-            print(f"{int(((i / frames) / channels) * 100)}% - frame {i}/{frames}, channel {c + 1}/{y_data.shape[1]}")
-
+            #print(f"{int(((i / frames) / channels) * 100)}% - frame {i}/{frames}, channel {c + 1}/{y_data.shape[1]}")
+            if int(((i / frames) / channels) * 100) % 10 == 0:
+                if printed == 0:
+                    print(f"{int(((i / frames) / channels) * 100)}%...", end="")
+                    printed = 1
+            else:
+                printed = 0
             sample_low = int(i * (N / frames))
             sample_high = int(((i + 1) * (N / frames)))
 
@@ -50,29 +56,45 @@ def Run_RFFT(file_name, data):
 
             all_y_data[i] = np.abs(yf)[:int(xf.shape[0])]
 
-        print(f"result array = {all_y_data.shape}")
+        print(f"\nresult array = {all_y_data.shape}")
 
         max_value = find_highest_value(all_y_data)
 
+        output_manager.write_csv(all_y_data, xf, file_name, c)
+
+        print(f"Printing data for channel {c + 1} of {channels}")
         for i in range(all_y_data.shape[0]):
             frame_id = round((i * frame_duration), 2)
-            print(f"Printing frame {i} of {all_y_data.shape[0]} for channel {c + 1} of {channels}")
+            #print(f"Printing frame {i} of {all_y_data.shape[0]} for channel {c + 1} of {channels}")
+            if int(((i / all_y_data.shape[0]) / channels) * 100) % 10 == 0:
+                if printed == 0:
+                    print(f"{int(((i / all_y_data.shape[0]) / channels) * 100)}%...", end="")
+                    printed = 1
+            else:
+                printed = 0
+
             if print_graphs == "y":
                 output_manager.print_plots(xf, all_y_data[i], file_name, i, frame_id, c, max_value)
-            output_manager.print_data(all_y_data[i], file_name, i, frame_id, c)
+            #output_manager.print_data(all_y_data[i], file_name, i, frame_id, c)
 
 
-def frame_count(duration, N, channels):
+    output_manager.print_x_data(xf, file_name)
+
+
+def frame_count(duration, N, channels, rate):
     print(
         f"\nAudio file is {duration} seconds long and contains {N * channels} total samples across {channels} channel(s) ({N} samples per channel)")
 
     print(
-        f"For 20fps, you need {duration * 20} frames\nFor 30fps, you need {duration * 30} frames\nFor 60fps, you need {duration * 60} frames")
+        f"For 20fps, you need {duration * 20} frames. This would create {int((N / (duration * 20))/2)} bins at {rate/(N / (duration * 20))}Hz separation\n"
+        f"For 30fps, you need {duration * 30} frames. This would create {int((N / (duration * 30))/2)} bins at {rate/(N / (duration * 30))}Hz separation\n"
+        f"For 60fps, you need {duration * 60} frames. This would create {int((N / (duration * 60))/2)} bins at {rate/(N / (duration * 60))}Hz separation\n")
 
     while True:
         frames = int(input(f"\nHow many frames would you like to produce? "))
         print(
-            f"This would make each frames {round((duration / frames), 2)} seconds long (i.e. {frames / duration} fps) and contain {int(N / frames)} samples")
+            f"\nThis would make each frames {round((duration / frames), 2)} seconds long (i.e. {frames / duration} fps) and contain {int(N / frames)} samples")
+        print(f"This would create {int((N / frames)/2)} bins at {rate/(N / frames)}Hz separation\n")
         confirm = input(f"Would you like to continue? (y/n) ")
         if confirm == 'y':
             return frames
