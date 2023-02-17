@@ -11,10 +11,14 @@ def FFT_Manager(y_data, meta_data, options):
     for c in range(y_data.shape[1]):
         print(f"\nAnalysing channel {c + 1} of {y_data.shape[1]}")
         xf, channel_fft_data = Run_RFFT(y_data, meta_data, options)
+        print(channel_fft_data.shape)
+
+
         fft_data[c] = channel_fft_data
 
-
     print(f"\nFFT produced an array of shape {fft_data.shape}\n")
+
+
     return fft_data, xf
 
 
@@ -63,3 +67,19 @@ def Run_RFFT(channel_data, meta_data, options):
         print(f"\nresult array = {channel_fft_data.shape}")
 
         return xf, channel_fft_data
+
+
+def trim_data(data):
+    if data.ndim != 1:
+        for c in range(data.shape[0]):
+            print(f"Trimming array from shape {data.shape}")
+            trimmed_data = np.delete(data, 0, 1)
+            print(f"Trimmed array shape {trimmed_data.shape}")
+
+
+    else:
+        print(f"Trimming array from shape {data.shape}")
+        trimmed_data = np.delete(data, 0)
+        print(f"Trimmed array shape {trimmed_data.shape}")
+
+    return trimmed_data

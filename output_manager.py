@@ -42,7 +42,6 @@ def print_plots(xf, frame_fft_data, file_name, i, frame_id, channel="LC", max_va
             channel_name = "LC"
         if channel == 1:
             channel_name = "RC"
-
     plt.plot(xf, np.abs(frame_fft_data)[:int(xf.shape[0])])
     if max_value is not None:
         plt.ylim([0, max_value])
@@ -85,21 +84,23 @@ def print_x_data(xf, file_name):
         f.close()
 
 
-def write_csv(channel_fft_data, xf, file_name, channel="LC"):
+def write_csv(channel_fft_data, xf, file_name, channel=None):
     if channel is not None:
         if channel == 0:
             channel_name = "LC"
         if channel == 1:
             channel_name = "RC"
+    else:
+        channel_name = "LC"
 
-    print(channel_fft_data.shape)
+    print(f"\nPrinting csv for channel {channel_name}")
 
     # writing to csv file
     with open(f"data/{file_name}/{file_name} {channel_name}.csv", 'w', newline="") as csvfile:
         for x in xf:
             csvfile.write(str(f"{x},"))
         csvfile.write("\n")
-        print(channel_fft_data.shape[0])
+        #print(channel_fft_data.shape[0])
         for i in range(channel_fft_data.shape[0]):
             for y in channel_fft_data[i]:
                 csvfile.write(str(f"{y}, "))
@@ -107,7 +108,7 @@ def write_csv(channel_fft_data, xf, file_name, channel="LC"):
 
 def find_highest_value(data):
     highest_val = data.max()
-    print(f"Highest value in array = {highest_val}")
+    #print(f"Highest value in array = {highest_val}")
     return highest_val
 
 

@@ -20,8 +20,10 @@ def select_options(duration, sample_count, channels, rate):
 
         if confirm == 'y':
             print_graphs = input(f"Would you like to print graphs? (y/n) ")
+            print_data = input(f"Would you like to print data? (y/n) ")
+            print_heightmap = input(f"Would you like to print heightmap? (y/n) ")
 
-            return frames, print_graphs, bins
+            return frames, print_graphs, bins, print_heightmap, print_data
         else:
             continue
 
@@ -68,7 +70,7 @@ def pre_fft_analysis(data):
     else:
         channels = 1
 
-    frames, print_graphs, bins = select_options(duration, sample_count, channels, data.rate)
+    frames, print_graphs, bins, print_heightmap, print_data = select_options(duration, sample_count, channels, data.rate)
     frame_duration = duration / frames
 
     rate = data.rate
@@ -93,7 +95,9 @@ def pre_fft_analysis(data):
         "frames": frames,
         "bins":bins,
         "frame_duration":frame_duration,
-        "print_graphs": print_graphs
+        "print_graphs": print_graphs,
+        "print_heightmap": print_heightmap,
+        "print_data": print_data
     }
 
     return y_data, meta_data, options
