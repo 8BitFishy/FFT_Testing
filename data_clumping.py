@@ -59,13 +59,20 @@ def data_clumping(data, ratio):
     print(new_data)
     return new_data
 
+
+
+
 if __name__ == '__main__':
     fft_data = data_processing("fft_data_sample.csv")
 
     ratio, bins = data_clumping_inputs(fft_data)
+
+
     print(f"\nClumping bins")
     fft_data_reduced = {"frames": fft_data["frames"], "bins": data_clumping(fft_data['bins'], ratio), "data": []}
     print("\nClumping data")
     for i in range(fft_data_reduced["frames"]):
         fft_data_reduced["data"].append(data_clumping(fft_data['data'][i], ratio))
     print(fft_data_reduced)
+
+
