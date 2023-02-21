@@ -22,8 +22,9 @@ def select_options(duration, sample_count, channels, rate):
             print_graphs = input(f"Would you like to print graphs? (y/n) ")
             print_data = input(f"Would you like to print data? (y/n) ")
             print_heightmap = input(f"Would you like to print heightmap? (y/n) ")
+            print_amplitude_heightmap = input(f"Would you like to print amplitude heightmap? (y/n) ")
 
-            return frames, print_graphs, bins, print_heightmap, print_data
+            return frames, print_graphs, bins, print_heightmap, print_data, print_amplitude_heightmap
         else:
             continue
 
@@ -65,12 +66,12 @@ def pre_fft_analysis(data):
             if data.data[i][0] != data.data[i][1]:
                 print(f"Channels vary from {i} - {data.data[i][0]} != {data.data[i][1]}")
                 break
-            if i == range(data.data.shape[0])-1:
+            if i == data.data.shape[0]-1:
                 print(f"Channels are identical")
     else:
         channels = 1
 
-    frames, print_graphs, bins, print_heightmap, print_data = select_options(duration, sample_count, channels, data.rate)
+    frames, print_graphs, bins, print_heightmap, print_data, print_amplitude_heightmap = select_options(duration, sample_count, channels, data.rate)
     frame_duration = duration / frames
 
     rate = data.rate
@@ -97,7 +98,8 @@ def pre_fft_analysis(data):
         "frame_duration":frame_duration,
         "print_graphs": print_graphs,
         "print_heightmap": print_heightmap,
-        "print_data": print_data
+        "print_data": print_data,
+        "print_amplitude_heightmap": print_amplitude_heightmap
     }
 
     return y_data, meta_data, options

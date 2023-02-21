@@ -65,11 +65,7 @@ def print_data(yf, file_name, i, frame_id, channel=None):
 
 def clear_files(file_name):
     folders = ["graphs", "data"]
-
     for i in range(len(folders)):
-        if not path.exists(f"{folders[i]}/{file_name}"):
-            makedirs(f"{folders[i]}/{file_name}")
-
         for files in walk(f"{folders[i]}/{file_name}"):
             filelist = list(files[2])
             for file in filelist:
@@ -121,3 +117,9 @@ def print_raw_data(y_data, file_name):
                 csvfile.write(str(f"{y_data[j][i]},"))
             csvfile.write("\n")
 
+
+def generate_folders(file_name):
+    folders = ["graphs", "data"]
+    for i in range(len(folders)):
+        if not path.exists(f"{folders[i]}/{file_name}"):
+            makedirs(f"{folders[i]}/{file_name}")

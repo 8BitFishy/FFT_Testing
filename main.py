@@ -5,7 +5,7 @@ import get_data, run_fft, output_manager, prep_for_fft, generate_height_map
 if __name__ == '__main__':
 
     file_name, data = get_data.Get_Data()
-
+    output_manager.generate_folders(file_name)
     print(f"\nFile meta-data = {data}")
 
     #output_manager.clear_files(file_name)
@@ -24,5 +24,5 @@ if __name__ == '__main__':
     if options["print_heightmap"] == "y":
         generate_height_map.generate_height_map(fft_data, file_name)
 
-
-
+    if options["print_amplitude_heightmap"] == "y":
+        generate_height_map.generate_height_map((y_data, file_name))

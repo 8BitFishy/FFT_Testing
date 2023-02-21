@@ -34,6 +34,7 @@ def generate_height_map(fft_data, file_name):
                 print(f"Value {fft_data[c][f][v]} mapped to {mapped_data[f][v]}")
                 '''
         #scaled_array = np.uint8(fft_data[c] * 255)
+        mapped_data = np.uint8(mapped_data)
 
         print(f"Scaled array of shape {mapped_data.shape}")
 
