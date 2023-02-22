@@ -31,10 +31,12 @@ def select_options(duration, sample_count, channels, rate):
 
 def prep_data(data, channels):
 
+    #lc, rc = split(data.data, 2, 1)
 
     if channels == 2:
         print("Sample is stereo")
-
+        print(data.data.shape)
+        print(data.data.shape[0], data.data.shape[1])
         y_data = zeros(shape=(data.data.shape[0], data.data.shape[1]))
         lc, rc = split(data.data, 2, 1)
         lc = lc.reshape(-1)

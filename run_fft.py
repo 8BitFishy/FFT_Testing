@@ -1,6 +1,7 @@
 from scipy.fft import rfft, rfftfreq
 import matplotlib.pyplot as plt
 import numpy as np
+from math import log10
 import output_manager
 
 plt.style.use('ggplot')
@@ -57,6 +58,8 @@ def Run_RFFT(channel_data, meta_data, options):
             #print(f"yf shape = {yf.shape}")
 
             channel_fft_data[i] = np.abs(yf)[:options['bins']].flatten()
+            for j in range(len(channel_fft_data[i])):
+                channel_fft_data[i][j] = log10(channel_fft_data[i][j])
 
             xf = xf[:options['bins']]
 

@@ -123,3 +123,12 @@ def generate_folders(file_name):
     for i in range(len(folders)):
         if not path.exists(f"{folders[i]}/{file_name}"):
             makedirs(f"{folders[i]}/{file_name}")
+
+
+def print_inputs(file_name, meta_data, options):
+    inputs = [meta_data, options]
+    with open(f"data/{file_name}/{file_name} inputs.txt", 'w') as f:
+        for i in range(len(inputs)):
+            for key, value in inputs[i].items():
+                f.write(str(f"{key}:{value}\n"))
+    f.close()
