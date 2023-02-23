@@ -1,4 +1,4 @@
-import get_data, run_fft, output_manager, prep_for_fft, generate_height_map
+import get_data, run_fft, output_manager, prep_for_fft, generate_height_map, data_scaling
 
 def main():
 
@@ -17,6 +17,8 @@ def main():
 
     #fft_data = run_fft.trim_data(fft_data, fft_data.shape[1])
     #xf = run_fft.trim_data(xf)
+
+    data_scaling.scale_data(fft_data, xf)
 
     if options["print_data"] == "y":
         output_manager.output_files(fft_data, xf, file_name, options, meta_data)
