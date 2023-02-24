@@ -40,6 +40,8 @@ def data_clumping_inputs(fft_data):
     print(f"Continuing with {bins} data clumps")
     return ratio, bins
 
+
+
 def data_clumping(data, ratio):
     print(f"data reduction ratio = 1:{int(ceil(ratio))}")
     new_data = []

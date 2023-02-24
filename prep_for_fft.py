@@ -1,5 +1,6 @@
 from numpy import zeros, split
 from math import ceil
+from input_validation import validate_input
 
 def select_options(duration, sample_count, channels, rate):
     print(
@@ -11,49 +12,62 @@ def select_options(duration, sample_count, channels, rate):
         f"For 60fps, you need {duration * 60} frames. This would create {ceil((sample_count / (duration * 60)) / 2)} bins at {rate / (sample_count / (duration * 60))}Hz separation\n")
 
     while True:
-        frames = int(input(f"\nHow many frames would you like to produce? "))
+        frame_rate = int(input(f"What frame rate would you like? "))
+        frames = frame_rate * duration
         bins = ceil((sample_count / frames) / 2)
         print(
-            f"\nThis makes each frame {round((duration / frames), 2)} seconds long ({frames / duration} fps) and contain {int(sample_count / frames)} samples")
+            f"\nThis  will make {frames} frames, each {round((duration / frames), 2)} seconds long and contain {int(sample_count / frames)} samples")
         print(f"This would create {bins} bins at {rate/(sample_count / frames)}Hz separation\n")
-        confirm = input(f"Would you like to continue? (y/n) ")
+        confirm, _ = validate_input(f"Would you like to continue?")
 
         if confirm == 'y':
-            print_graphs = input(f"Would you like to print graphs? (y/n) ")
-            print_data = input(f"Would you like to print data? (y/n) ")
-            print_heightmap = input(f"Would you like to print heightmap? (y/n) ")
-            print_amplitude_heightmap = input(f"Would you like to print amplitude heightmap? (y/n) ")
+            if channels == 2:
+                analyse_both_channels, _ = validate_input("Would you like to analyse both channels?")
+            else:
+                analyse_both_channels = "n"
+            print_graphs, _ = validate_input(f"Would you like to print graphs?")
+            print_data, _ = validate_input(f"Would you like to print data?")
+            print_heightmap, _ = validate_input(f"Would you like to print heightmap?")
+            print_wav_heightmap, _ = validate_input(f"Would you like to print wav heightmap?")
 
-            return frames, print_graphs, bins, print_heightmap, print_data, print_amplitude_heightmap
+            return frames, print_graphs, bins, print_heightmap, print_data, print_wav_heightmap, analyse_both_channels
         else:
             continue
 
 
-def prep_data(data, channels):
+def prep_data(data, channels, analyse_both_channels):
 
-    #lc, rc = split(data.data, 2, 1)
 
     if channels == 2:
         print("Sample is stereo")
-        print(data.data.shape)
-        print(data.data.shape[0], data.data.shape[1])
-        y_data = zeros(shape=(data.data.shape[0], data.data.shape[1]))
+
         lc, rc = split(data.data, 2, 1)
         lc = lc.reshape(-1)
-        rc = rc.reshape(-1)
 
-        y_data[:, 0] = lc
-        y_data[:, 1] = rc
-        print(y_data.shape)
+        if analyse_both_channels != "y":
+            print("Only analysing left channel")
+            print(f"Converting {data.data.shape} array to ", end="")
+            y_data = lc
+            print(f"{y_data.shape} array for analysis.")
+            channels = 1
 
+        else:
+            print("Analysing both channels, giving array of shape ", end="")
+            y_data = zeros(shape=(data.data.shape[0], data.data.shape[1]))
+            channels = 2
+            rc = rc.reshape(-1)
+            y_data[:, 0] = lc
+            y_data[:, 1] = rc
+            print(f"{y_data.shape}")
 
 
     else:
         print(f"Sample is mono")
         y_data = data.data
+        channels = 1
         # y_data = data.data.reshape(-1)
 
-    return y_data
+    return y_data, channels
 
 
 def pre_fft_analysis(data):
@@ -73,17 +87,15 @@ def pre_fft_analysis(data):
     else:
         channels = 1
 
-    frames, print_graphs, bins, print_heightmap, print_data, print_amplitude_heightmap = select_options(duration, sample_count, channels, data.rate)
+    frames, print_graphs, bins, print_heightmap, print_data, print_wav_heightmap, analyse_both_channels = select_options(duration, sample_count, channels, data.rate)
     frame_duration = duration / frames
 
     rate = data.rate
+    print(f"\nFrames selected = {frames}")
+    print(f"Frame samples = {sample_count / frames}")
+    print(f"Frame duration = {round(frame_duration, 2)}\n")
 
-    print(f"frames selected = {frames}")
-    print(f"frame samples = {sample_count / frames}")
-    print(f"frame duration = {round(frame_duration, 2)}")
-
-
-    y_data = prep_data(data, channels)
+    y_data, channels = prep_data(data, channels, analyse_both_channels)
 
     print(f"Analysing data array of shape {y_data.shape}")
 
@@ -101,7 +113,7 @@ def pre_fft_analysis(data):
         "print_graphs": print_graphs,
         "print_heightmap": print_heightmap,
         "print_data": print_data,
-        "print_amplitude_heightmap": print_amplitude_heightmap
+        "print_wav_heightmap": print_wav_heightmap
     }
 
     return y_data, meta_data, options

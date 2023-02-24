@@ -11,13 +11,9 @@ def FFT_Manager(y_data, meta_data, options):
     for c in range(y_data.shape[1]):
         print(f"\nAnalysing channel {c + 1} of {y_data.shape[1]}")
         xf, channel_fft_data = Run_RFFT(y_data, meta_data, options)
-        print(channel_fft_data.shape)
-
-
         fft_data[c] = channel_fft_data
 
-    print(f"\nFFT produced an array of shape {fft_data.shape}\n")
-
+    print(f"\nFFT produced an array of shape {fft_data.shape} - (channels, frames, bins)\n")
 
     return fft_data, xf
 
@@ -25,21 +21,14 @@ def FFT_Manager(y_data, meta_data, options):
 
 def Run_RFFT(channel_data, meta_data, options):
 
-
-        #y_data_channel = y_data[:, c]
-
         channel_fft_data = np.zeros(shape=(options['frames'], options['bins']))
-
-        #print(f"Channel data shape = {channel_data.shape}")
-        #print(f"Channel_fft_data shape = {channel_fft_data.shape}")
 
         printed = 0
 
         for i in range(options["frames"]):
-            #print(f"{int(((i / frames) / channels) * 100)}% - frame {i}/{frames}, channel {c + 1}/{y_data.shape[1]}")
-            if int(((i / options["frames"]) / meta_data["channels"]) * 100) % 10 == 0:
+            if int((i / options["frames"]) * 100) % 10 == 0:
                 if printed == 0:
-                    print(f"{int(((i / options['frames']) / meta_data['channels']) * 100)}%...", end="")
+                    print(f"{int((i / options['frames']) * 100)}%...", end="")
                     printed = 1
             else:
                 printed = 0
@@ -50,21 +39,11 @@ def Run_RFFT(channel_data, meta_data, options):
             samples_in_frame = (meta_data['sample_count'] / options['frames'])
 
             y_data_frame = channel_data[sample_low:sample_high]
-            #print(f"y_data_frame shape = {y_data_frame.shape}")
             xf = rfftfreq(int(samples_in_frame), 1 / meta_data['rate'])
 
-            yf = rfft(y_data_frame.reshape(-1))
-            #print(f"yf shape = {yf.shape}")
-
-            channel_fft_data[i] = np.abs(yf)[:options['bins']].flatten()
+            channel_fft_data[i] = np.abs(rfft(y_data_frame.reshape(-1)))[:options['bins']].flatten()
 
             xf = xf[:options['bins']]
-
-
-            #plt.plot(xf, np.abs(channel_fft_data[i])[:int(xf.shape[0])])
-            #plt.show()
-
-        print(f"\nresult array = {channel_fft_data.shape}")
 
         return xf, channel_fft_data
 
